@@ -27,8 +27,8 @@ export default {
 
 <style lang="scss" scoped>
     .item {
-        width: 300px;
-        height: 300px;
+        width: auto;
+        height: 250px;
         background-size: cover;
         background-repeat: no-repeat;
         background-position: 50%;

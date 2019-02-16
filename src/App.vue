@@ -9,8 +9,12 @@
         <Claim v-if="step === 0"/>
         <SearchInput v-model="searchValue" @input="handleInput" :dark="step === 1"/>
         <div class="results" v-if="results && !loading && step === 1">
-            <Item v-for="item in results" :item="item" :key="item.data[0].nasa_id"/>
+            <Item v-for="item in results" @click.native="handleModalOpen(item)" :item="item" :key="item.data[0].nasa_id"/>
         </div>
+        <div class="lds-roller" v-if="step === 1 && loading">        
+            <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> <div></div> 
+        </div>
+        <Modal v-if="modalOpen" @closeModal="modalOpen = false" :item="modalItem"/>
     </div>
 </template>
 
@@ -21,6 +25,7 @@ import Claim from '@/components/Claim.vue';
 import SearchInput from '@/components/SearchInput.vue';
 import HeroImage from '@/components/HeroImage.vue';
 import Item from '@/components/Item.vue';
+import Modal from '@/components/Modal.vue';
 
 const API ='https://images-api.nasa.gov/search';
 
@@ -30,17 +35,24 @@ export default {
         Claim,
         SearchInput,
         HeroImage,
-        Item
+        Item,
+        Modal
     },
     data() {
         return {
             loading: false,
             step: 0,
+            modalOpen: false,
+            modalItem: null,
             searchValue: '',
             results: [],
         };
     },
     methods: {
+        handleModalOpen(item) {
+            this.modalOpen = true;
+            this.modalItem = item;
+        },
         handleInput: debounce(function() {
             this.loading = true;
             axios.get(`${API}?q=${this.searchValue}&media_type=image`)
@@ -110,6 +122,112 @@ body {
 
 .slide-enter, .slide-leave-to {
     transform: translateY(-200%) translateX(-50%);
+}
+
+.results {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 20px;
+    width: 80%;
+    margin-top: 50px;
+
+    @media(min-width: 768px) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    @media(min-width: 1024px) {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+}
+
+
+//loader
+.lds-roller {
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+}
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 32px 32px;
+}
+.lds-roller div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1e3d4a;
+  margin: -3px 0 0 -3px;
+}
+.lds-roller div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+.lds-roller div:nth-child(1):after {
+  top: 50px;
+  left: 50px;
+}
+.lds-roller div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+.lds-roller div:nth-child(2):after {
+  top: 54px;
+  left: 45px;
+}
+.lds-roller div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+.lds-roller div:nth-child(3):after {
+  top: 57px;
+  left: 39px;
+}
+.lds-roller div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+.lds-roller div:nth-child(4):after {
+  top: 58px;
+  left: 32px;
+}
+.lds-roller div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+.lds-roller div:nth-child(5):after {
+  top: 57px;
+  left: 25px;
+}
+.lds-roller div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+.lds-roller div:nth-child(6):after {
+  top: 54px;
+  left: 19px;
+}
+.lds-roller div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+.lds-roller div:nth-child(7):after {
+  top: 50px;
+  left: 14px;
+}
+.lds-roller div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+.lds-roller div:nth-child(8):after {
+  top: 45px;
+  left: 10px;
+}
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 </style>
